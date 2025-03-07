@@ -1,18 +1,36 @@
-import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class AuthProvider with ChangeNotifier {
-  // Datos de ejemplo
-  String _userName = "Usuario Ejemplo";
-  String _userEmail = "usuario@example.com";
+class AuthProvider {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  String get userName => _userName;
-  String get userEmail => _userEmail;
+  Future<User?> signIn(String email, String password) async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return userCredential.user;
+    } catch (e) {
+      print("Error en inicio de sesión: $e");
+      return null;
+    }
+  }
 
-  // Aquí en el futuro se conectará Firebase
-  void loadUserData() {
-    // Simulación de carga de datos de Firebase
-    _userName = "Nombre Firebase";
-    _userEmail = "correo@firebase.com";
-    notifyListeners();
+  Future<User?> register(String email, String password) async {
+    try {
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return userCredential.user;
+    } catch (e) {
+      print("Error en registro: $e");
+      return null;
+    }
+  }
+
+  Future<void> signOut() async {
+    await _auth.signOut();
   }
 }
