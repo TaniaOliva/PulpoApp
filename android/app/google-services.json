@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "83845209931",
+    "project_id": "pulpoapp-d0c57",
+    "storage_bucket": "pulpoapp-d0c57.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:83845209931:android:fe040dfd46518f367b52ce",
+        "android_client_info": {
+          "package_name": "com.example.flutter_pulpoapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtW8lgQv-743a7QKNBAmFKlOTwkEF7rtg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

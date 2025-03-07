@@ -1,0 +1,2 @@
+C:/Users/kenny/dev/flutter project/PulpoApp/android/app/.cxx/Debug/560o7253/x86/CMakeFiles/edit_cache.dir
+C:/Users/kenny/dev/flutter project/PulpoApp/android/app/.cxx/Debug/560o7253/x86/CMakeFiles/rebuild_cache.dir

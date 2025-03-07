@@ -1,0 +1,1 @@
+C:\Users\kenny\OneDrive\Desktop\dev\flutter-project\PulpoApp\build\app\intermediates\cxx\Debug\18215c1d\obj\arm64-v8a

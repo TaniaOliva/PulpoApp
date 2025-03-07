@@ -1,0 +1,2 @@
+C:/Users/kenny/OneDrive/Documents/GitHub/PulpoApp/android/app/.cxx/Debug/b2k194n2/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/kenny/OneDrive/Documents/GitHub/PulpoApp/android/app/.cxx/Debug/b2k194n2/arm64-v8a/CMakeFiles/rebuild_cache.dir
