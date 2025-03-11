@@ -9,6 +9,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
@@ -24,8 +25,12 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     AuthProvider auth = AuthProvider();
-    var user =
-        await auth.register(_emailController.text, _passwordController.text);
+    var user = await auth.register(
+      _usernameController.text,
+      _emailController.text,
+      _passwordController.text,
+    );
+
     if (user != null) {
       Navigator.pushReplacementNamed(context, '/home');
     } else {
@@ -38,69 +43,80 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true, // Evita problemas con el teclado
       body: Container(
-        color: Color.fromARGB(255, 217, 217, 218), // Fondo gris claro
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Imagen de usuario
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage('assets/images/user.png'),
-              backgroundColor: Colors.transparent,
-            ),
-            const SizedBox(height: 20),
-            // Título
-            const Text(
-              "Registro",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            // Campo de correo
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: "Correo"),
-            ),
-            // Campo de contraseña
-            TextField(
-              controller: _passwordController,
-              obscureText: _obscurePassword,
-              decoration: InputDecoration(
-                labelText: "Contraseña",
-                suffixIcon: IconButton(
-                  icon: Icon(_obscurePassword
-                      ? Icons.visibility
-                      : Icons.visibility_off),
-                  onPressed: () {
-                    setState(() {
-                      _obscurePassword = !_obscurePassword;
-                    });
-                  },
+        width: double.infinity,
+        height: double.infinity, // Asegura que el fondo cubra toda la pantalla
+        color: const Color.fromARGB(255, 217, 217, 218), // Fondo gris claro
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 50),
+                CircleAvatar(
+                  radius: 50,
+                  backgroundImage: AssetImage('assets/images/user.png'),
+                  backgroundColor: Colors.transparent,
                 ),
-              ),
+                const SizedBox(height: 20),
+                const Text(
+                  "Registro",
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
+                // Campo de usuario
+                TextField(
+                  controller: _usernameController,
+                  decoration: const InputDecoration(labelText: "Usuario"),
+                ),
+                // Campo de correo
+                TextField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(labelText: "Correo"),
+                ),
+                // Campo de contraseña
+                TextField(
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
+                  decoration: InputDecoration(
+                    labelText: "Contraseña",
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscurePassword
+                          ? Icons.visibility
+                          : Icons.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+                // Confirmar contraseña
+                TextField(
+                  controller: _confirmPasswordController,
+                  obscureText: _obscurePassword,
+                  decoration:
+                      const InputDecoration(labelText: "Repetir Contraseña"),
+                ),
+                const SizedBox(height: 20),
+                // Botón de registro
+                ElevatedButton(
+                  onPressed: _register,
+                  child: const Text("Registrar"),
+                ),
+                // Opción para ir a iniciar sesión
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/');
+                  },
+                  child: const Text("¿Ya tienes cuenta? Inicia sesión"),
+                ),
+              ],
             ),
-            // Confirmar contraseña
-            TextField(
-              controller: _confirmPasswordController,
-              obscureText: _obscurePassword,
-              decoration:
-                  const InputDecoration(labelText: "Repetir Contraseña"),
-            ),
-            const SizedBox(height: 20),
-            // Botón de registro
-            ElevatedButton(
-              onPressed: _register,
-              child: const Text("Registrar"),
-            ),
-            // Opción para ir a iniciar sesión
-            TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/');
-              },
-              child: const Text("¿Ya tienes cuenta? Inicia sesión"),
-            ),
-          ],
+          ),
         ),
       ),
     );

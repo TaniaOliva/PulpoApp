@@ -9,14 +9,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
   void _login() async {
     AuthProvider auth = AuthProvider();
     var user =
-        await auth.signIn(_emailController.text, _passwordController.text);
+        await auth.signIn(_usernameController.text, _passwordController.text);
     if (user != null) {
       Navigator.pushReplacementNamed(context, '/home');
     } else {
@@ -35,25 +35,21 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Imagen de usuario
             CircleAvatar(
               radius: 60,
               backgroundImage: AssetImage('assets/images/user.png'),
               backgroundColor: Colors.transparent,
             ),
             const SizedBox(height: 20),
-            // Título
             const Text(
               "Iniciar Sesión",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            // Campo de correo
             TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: "Correo"),
+              controller: _usernameController,
+              decoration: const InputDecoration(labelText: "Usuario"),
             ),
-            // Campo de contraseña
             TextField(
               controller: _passwordController,
               obscureText: _obscurePassword,
@@ -72,10 +68,8 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             const SizedBox(height: 20),
-            // Botón de inicio de sesión
             ElevatedButton(
                 onPressed: _login, child: const Text("Iniciar Sesión")),
-            // Opción para crear cuenta
             TextButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/register');
