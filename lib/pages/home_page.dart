@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_pulpoapp/pages/products_page.dart';
 import 'package:flutter_pulpoapp/widgets/drawer.dart';
 import 'package:flutter_pulpoapp/pages/inventory_page.dart';
-import 'package:flutter_pulpoapp/pages/provider_page.dart';
+import 'package:flutter_pulpoapp/pages/proveedores_page.dart';
 import 'package:flutter_pulpoapp/pages/out_of_stock_page.dart';
 import 'package:flutter_pulpoapp/pages/scanner_page.dart';
 
@@ -52,7 +53,7 @@ class HomePage extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 50),
 
             // Botones organizados en un Grid
             Expanded(
@@ -76,7 +77,7 @@ class HomePage extends StatelessWidget {
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const ProviderPage()),
+                          builder: (context) => const ProvidersPage()),
                     ),
                   ),
                   _HomeButton(
