@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_pulpoapp/pages/edit_product_page.dart';
 import 'package:flutter_pulpoapp/pages/home_page.dart';
 import 'package:flutter_pulpoapp/pages/inventory_page.dart';
 import 'package:flutter_pulpoapp/pages/login_page.dart';
@@ -16,14 +17,18 @@ class AppRouter {
       case '/home':
         return MaterialPageRoute(builder: (_) => const HomePage());
       case '/inventory':
-        return MaterialPageRoute(builder: (_) => const InventoryPage());
+        return MaterialPageRoute(builder: (_) => InventoryPage());
       case '/out_of_stock':
         return MaterialPageRoute(builder: (_) => const OutOfStockPage());
-
       case '/products':
         return MaterialPageRoute(
           builder: (context) =>
               ProductsPage(providerName: settings.arguments as String),
+        );
+      case '/edit_product':
+        return MaterialPageRoute(
+          builder: (context) =>
+              EditProductPage(productId: settings.arguments as String),
         );
       default:
         return MaterialPageRoute(

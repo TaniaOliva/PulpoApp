@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProvidersPage extends StatefulWidget {
   const ProvidersPage({Key? key}) : super(key: key);
@@ -11,19 +12,59 @@ class ProvidersPage extends StatefulWidget {
 class _ProvidersPageState extends State<ProvidersPage> {
   final TextEditingController _providerController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Agregar proveedor a Firebase
+  // Obtener el ID del usuario actual
+  String get userId => _auth.currentUser?.uid ?? '';
+
+  // Agregar proveedor a Firebase en la colección del usuario
   void _addProvider() async {
     String name = _providerController.text.trim();
-    if (name.isNotEmpty) {
-      await _firestore.collection('providers').add({'name': name});
+    if (name.isNotEmpty && userId.isNotEmpty) {
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('proveedores')
+          .add({'name': name});
       _providerController.clear();
+      Navigator.pop(context); // Cerrar el diálogo después de agregar
     }
+  }
+
+  // Mostrar diálogo de confirmación antes de eliminar
+  void _confirmDeleteProvider(String id) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Eliminar Proveedor"),
+        content:
+            const Text("¿Estás seguro de que deseas eliminar este proveedor?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context), // Cerrar sin eliminar
+            child: const Text("No"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              _deleteProvider(id);
+              Navigator.pop(context); // Cerrar después de eliminar
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text("Sí"),
+          ),
+        ],
+      ),
+    );
   }
 
   // Eliminar proveedor de Firebase
   void _deleteProvider(String id) async {
-    await _firestore.collection('providers').doc(id).delete();
+    await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('proveedores')
+        .doc(id)
+        .delete();
   }
 
   @override
@@ -63,17 +104,23 @@ class _ProvidersPageState extends State<ProvidersPage> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const Divider(color: Colors.grey),
 
-            // Lista de proveedores desde Firebase
+            // Lista de proveedores desde Firebase del usuario actual
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                stream: _firestore.collection('providers').snapshots(),
+                stream: _firestore
+                    .collection('users')
+                    .doc(userId)
+                    .collection('proveedores')
+                    .snapshots(),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData)
+                  if (!snapshot.hasData) {
                     return const Center(child: CircularProgressIndicator());
+                  }
 
                   var providers = snapshot.data!.docs;
-                  if (providers.isEmpty)
+                  if (providers.isEmpty) {
                     return const Center(child: Text("No hay proveedores aún"));
+                  }
 
                   return Wrap(
                     spacing: 8,
@@ -83,8 +130,8 @@ class _ProvidersPageState extends State<ProvidersPage> {
                       String name = doc['name'];
 
                       return GestureDetector(
-                        onLongPress: () =>
-                            _deleteProvider(id), // Eliminar con pulsación larga
+                        onLongPress: () => _confirmDeleteProvider(
+                            id), // Diálogo antes de eliminar
                         onTap: () => Navigator.pushNamed(context, '/products',
                             arguments: name),
                         child: Container(

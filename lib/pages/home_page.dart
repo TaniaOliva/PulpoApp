@@ -67,8 +67,7 @@ class HomePage extends StatelessWidget {
                     text: "Inventario",
                     onTap: () => Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => const InventoryPage()),
+                      MaterialPageRoute(builder: (context) => InventoryPage()),
                     ),
                   ),
                   _HomeButton(
