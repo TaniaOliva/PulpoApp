@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class OutOfStockPage extends StatefulWidget {
   const OutOfStockPage({Key? key}) : super(key: key);
@@ -9,16 +10,34 @@ class OutOfStockPage extends StatefulWidget {
 }
 
 class _OutOfStockPageState extends State<OutOfStockPage> {
-  int selectedQuantity = 0; // Valor inicial del filtro
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  int selectedQuantity = 0;
+  String? _userId;
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentUser();
+  }
+
+  void _getCurrentUser() {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      setState(() {
+        _userId = user.uid;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4E5D6), // Fondo beige claro
+      backgroundColor: const Color(0xFFF4E5D6),
       appBar: AppBar(
         title: const Text("Productos sin Stock",
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFFD9A7A0), // Color del encabezado
+        backgroundColor: const Color(0xFFD9A7A0),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -31,7 +50,6 @@ class _OutOfStockPageState extends State<OutOfStockPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Filtro con Scroll Horizontal
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -64,55 +82,59 @@ class _OutOfStockPageState extends State<OutOfStockPage> {
               ),
             ),
             const SizedBox(height: 16),
-            // Título
-
-            // Lista de productos filtrados
             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('products')
-                    .where('quantity', isLessThanOrEqualTo: selectedQuantity)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+              child: _userId == null
+                  ? const Center(child: CircularProgressIndicator())
+                  : StreamBuilder<QuerySnapshot>(
+                      stream: _firestore
+                          .collection('users')
+                          .doc(_userId)
+                          .collection('productos')
+                          .where('quantity',
+                              isLessThanOrEqualTo: selectedQuantity)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
 
-                  var products = snapshot.data!.docs;
+                        var products = snapshot.data!.docs;
 
-                  if (products.isEmpty) {
-                    return const Center(
-                      child: Text("No hay productos con esta cantidad",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold)),
-                    );
-                  }
+                        if (products.isEmpty) {
+                          return const Center(
+                            child: Text("No hay productos con esta cantidad",
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold)),
+                          );
+                        }
 
-                  return ListView.builder(
-                    itemCount: products.length,
-                    itemBuilder: (context, index) {
-                      var product = products[index];
-                      return Card(
-                        color: Colors
-                            .grey[300], // Fondo gris claro como en proveedores
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: ListTile(
-                          title: Text(product['name'],
-                              style: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold)),
-                          subtitle: Text("Cantidad: ${product['quantity']}"),
-                          leading: const Icon(Icons.warning,
-                              color: Colors.redAccent),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
+                        return ListView.builder(
+                          itemCount: products.length,
+                          itemBuilder: (context, index) {
+                            var product = products[index];
+                            return Card(
+                              color: Colors.grey[300],
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: ListTile(
+                                title: Text(product['name'],
+                                    style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold)),
+                                subtitle:
+                                    Text("Cantidad: ${product['quantity']}"),
+                                leading: const Icon(Icons.warning,
+                                    color: Colors.redAccent),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
             ),
           ],
         ),

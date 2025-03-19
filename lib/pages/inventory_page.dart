@@ -202,8 +202,8 @@ class _InventoryPageState extends State<InventoryPage> {
                                       ),
                                     ),
                                     const SizedBox(width: 8),
-                                    Text("\$${price}",
-                                        style: const TextStyle(fontSize: 16)),
+                                    Text("${price}\Lps",
+                                        style: const TextStyle(fontSize: 17)),
                                     const SizedBox(width: 8),
                                     Row(
                                       mainAxisSize: MainAxisSize.min,
