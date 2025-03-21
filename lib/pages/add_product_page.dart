@@ -12,7 +12,6 @@ class _AddProductPageState extends State<AddProductPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
 
-  // Controladores de los campos
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
@@ -35,7 +34,6 @@ class _AddProductPageState extends State<AddProductPage> {
           key: _formKey,
           child: Column(
             children: [
-              // Campo Nombre del Producto
               TextFormField(
                 controller: _nameController,
                 decoration:
@@ -43,8 +41,6 @@ class _AddProductPageState extends State<AddProductPage> {
                 validator: (value) =>
                     value!.isEmpty ? "Ingrese un nombre" : null,
               ),
-
-              // Selección de Categoría
               StreamBuilder<QuerySnapshot>(
                 stream: _firestore
                     .collection('users')
@@ -70,15 +66,11 @@ class _AddProductPageState extends State<AddProductPage> {
                   );
                 },
               ),
-
-              // Opción para Nueva Categoría
               TextFormField(
                 decoration: const InputDecoration(
                     labelText: "Nueva categoría (opcional)"),
                 onChanged: (value) => _newCategory = value,
               ),
-
-              // Selección de Proveedor
               StreamBuilder<QuerySnapshot>(
                 stream: _firestore
                     .collection('users')
@@ -104,8 +96,6 @@ class _AddProductPageState extends State<AddProductPage> {
                   );
                 },
               ),
-
-              // Precio
               TextFormField(
                 controller: _priceController,
                 keyboardType: TextInputType.number,
@@ -113,8 +103,6 @@ class _AddProductPageState extends State<AddProductPage> {
                 validator: (value) =>
                     value!.isEmpty ? "Ingrese un precio" : null,
               ),
-
-              // Cantidad
               TextFormField(
                 controller: _quantityController,
                 keyboardType: TextInputType.number,
@@ -122,9 +110,7 @@ class _AddProductPageState extends State<AddProductPage> {
                 validator: (value) =>
                     value!.isEmpty ? "Ingrese una cantidad" : null,
               ),
-
               const SizedBox(height: 20),
-
               ElevatedButton(
                 onPressed: _addProduct,
                 child: const Text("Guardar Producto"),
@@ -142,7 +128,6 @@ class _AddProductPageState extends State<AddProductPage> {
           ? _newCategory!
           : _selectedCategory!;
 
-      // Si es una nueva categoría, guardarla en la colección del usuario
       if (_newCategory != null && _newCategory!.isNotEmpty) {
         await _firestore
             .collection('users')
@@ -151,7 +136,6 @@ class _AddProductPageState extends State<AddProductPage> {
             .add({'name': category});
       }
 
-      // Guardar el producto en la colección del usuario
       await _firestore
           .collection('users')
           .doc(userId)
@@ -164,7 +148,6 @@ class _AddProductPageState extends State<AddProductPage> {
         'quantity': int.parse(_quantityController.text),
       });
 
-      // Regresar a la pantalla anterior
       Navigator.pop(context);
     }
   }

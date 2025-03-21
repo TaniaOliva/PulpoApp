@@ -13,7 +13,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFFD9B7A5), // Color del encabezado
+        backgroundColor: const Color(0xFFD9B7A5),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -28,7 +28,7 @@ class HomePage extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(30),
               child: Image.asset(
-                'assets/images/logo.png', // Asegúrate de colocar el logo en assets
+                'assets/images/logo.png',
                 width: 55,
                 height: 55,
                 fit: BoxFit.cover,
@@ -37,13 +37,12 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
-      drawer: const AppDrawer(), // Menú lateral
+      drawer: const AppDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Barra de búsqueda
             TextField(
               decoration: InputDecoration(
                 hintText: "Buscar...",
@@ -54,8 +53,6 @@ class HomePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 50),
-
-            // Botones organizados en un Grid
             Expanded(
               child: GridView.count(
                 crossAxisCount: 2,
@@ -93,8 +90,7 @@ class HomePage extends StatelessWidget {
                     text: "Scanner",
                     onTap: () => Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => const ScannerPage()),
+                      MaterialPageRoute(builder: (context) => ScannerPage()),
                     ),
                   ),
                 ],
@@ -107,7 +103,6 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// Widget de botón reutilizable con navegación
 class _HomeButton extends StatelessWidget {
   final IconData icon;
   final String text;
@@ -126,7 +121,7 @@ class _HomeButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
       ),
-      onPressed: onTap, // Ahora cada botón tiene su propia acción de navegación
+      onPressed: onTap,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

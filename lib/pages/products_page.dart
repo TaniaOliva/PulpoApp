@@ -54,7 +54,9 @@ class ProductsPage extends StatelessWidget {
                     title: Text(product['name'],
                         style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold)),
-                    subtitle: Text("Cantidad: ${product['quantity']}"),
+                    subtitle: Text(
+                        "Cantidad: ${product['quantity']}\nPrecio: \Lps${product['price']}",
+                        style: const TextStyle(fontSize: 16)),
                     leading: const Icon(Icons.shopping_bag, color: Colors.teal),
                   ),
                 );

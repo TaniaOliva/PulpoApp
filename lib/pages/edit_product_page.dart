@@ -63,7 +63,6 @@ class _EditProductPageState extends State<EditProductPage> {
           key: _formKey,
           child: Column(
             children: [
-              // Campo Nombre del Producto
               TextFormField(
                 controller: _nameController,
                 decoration:
@@ -71,8 +70,6 @@ class _EditProductPageState extends State<EditProductPage> {
                 validator: (value) =>
                     value!.isEmpty ? "Ingrese un nombre" : null,
               ),
-
-              // Selección de Categoría
               StreamBuilder<QuerySnapshot>(
                 stream: _firestore
                     .collection('users')
@@ -99,15 +96,11 @@ class _EditProductPageState extends State<EditProductPage> {
                   );
                 },
               ),
-
-              // Opción para Nueva Categoría
               TextFormField(
                 decoration: const InputDecoration(
                     labelText: "Nueva categoría (opcional)"),
                 onChanged: (value) => _newCategory = value,
               ),
-
-              // Selección de Proveedor
               StreamBuilder<QuerySnapshot>(
                 stream: _firestore
                     .collection('users')
@@ -134,8 +127,6 @@ class _EditProductPageState extends State<EditProductPage> {
                   );
                 },
               ),
-
-              // Precio
               TextFormField(
                 controller: _priceController,
                 keyboardType: TextInputType.number,
@@ -143,8 +134,6 @@ class _EditProductPageState extends State<EditProductPage> {
                 validator: (value) =>
                     value!.isEmpty ? "Ingrese un precio" : null,
               ),
-
-              // Cantidad
               TextFormField(
                 controller: _quantityController,
                 keyboardType: TextInputType.number,
@@ -152,9 +141,7 @@ class _EditProductPageState extends State<EditProductPage> {
                 validator: (value) =>
                     value!.isEmpty ? "Ingrese una cantidad" : null,
               ),
-
               const SizedBox(height: 20),
-
               ElevatedButton(
                 onPressed: _updateProduct,
                 child: const Text("Actualizar Producto"),
@@ -172,7 +159,6 @@ class _EditProductPageState extends State<EditProductPage> {
           ? _newCategory!
           : _selectedCategory!;
 
-      // Si se ingresó una nueva categoría, guardarla en la colección del usuario
       if (_newCategory != null && _newCategory!.isNotEmpty) {
         await _firestore
             .collection('users')
@@ -181,7 +167,6 @@ class _EditProductPageState extends State<EditProductPage> {
             .add({'name': category});
       }
 
-      // Actualizar el producto en la colección del usuario
       await _firestore
           .collection('users')
           .doc(userId)
@@ -195,7 +180,6 @@ class _EditProductPageState extends State<EditProductPage> {
         'quantity': int.parse(_quantityController.text),
       });
 
-      // Regresar a la pantalla anterior
       Navigator.pop(context);
     }
   }

@@ -5,7 +5,6 @@ class AuthProvider {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Registro de usuario con nombre, correo y contraseña
   Future<User?> register(String username, String email, String password) async {
     try {
       UserCredential userCredential =
@@ -14,7 +13,6 @@ class AuthProvider {
         password: password,
       );
 
-      // Guardar el nombre de usuario en Firestore
       await _firestore.collection('users').doc(userCredential.user!.uid).set({
         'username': username,
         'email': email,
@@ -27,10 +25,8 @@ class AuthProvider {
     }
   }
 
-  // Inicio de sesión con usuario y contraseña
   Future<User?> signIn(String username, String password) async {
     try {
-      // Buscar el usuario en Firestore
       QuerySnapshot userQuery = await _firestore
           .collection('users')
           .where('username', isEqualTo: username)
@@ -56,11 +52,9 @@ class AuthProvider {
     }
   }
 
-  // Cerrar sesión
   Future<void> signOut() async {
     await _auth.signOut();
   }
 
-  // Obtener usuario actual
   User? get currentUser => _auth.currentUser;
 }

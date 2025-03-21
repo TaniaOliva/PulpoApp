@@ -43,11 +43,11 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true, // Evita problemas con el teclado
+      resizeToAvoidBottomInset: true,
       body: Container(
         width: double.infinity,
-        height: double.infinity, // Asegura que el fondo cubra toda la pantalla
-        color: const Color.fromARGB(255, 217, 217, 218), // Fondo gris claro
+        height: double.infinity,
+        color: const Color.fromARGB(255, 217, 217, 218),
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20.0),
@@ -66,17 +66,14 @@ class _RegisterPageState extends State<RegisterPage> {
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 20),
-                // Campo de usuario
                 TextField(
                   controller: _usernameController,
                   decoration: const InputDecoration(labelText: "Usuario"),
                 ),
-                // Campo de correo
                 TextField(
                   controller: _emailController,
                   decoration: const InputDecoration(labelText: "Correo"),
                 ),
-                // Campo de contraseña
                 TextField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
@@ -94,7 +91,6 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                 ),
-                // Confirmar contraseña
                 TextField(
                   controller: _confirmPasswordController,
                   obscureText: _obscurePassword,
@@ -102,12 +98,10 @@ class _RegisterPageState extends State<RegisterPage> {
                       const InputDecoration(labelText: "Repetir Contraseña"),
                 ),
                 const SizedBox(height: 20),
-                // Botón de registro
                 ElevatedButton(
                   onPressed: _register,
                   child: const Text("Registrar"),
                 ),
-                // Opción para ir a iniciar sesión
                 TextButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/');

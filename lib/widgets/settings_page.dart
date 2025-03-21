@@ -150,7 +150,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ListTile(
               leading: const Icon(Icons.privacy_tip),
               title: const Text("Permisos de la app"),
-              onTap: () {}, // Implementar permisos
+              onTap: () {},
             ),
             ListTile(
               leading: const Icon(Icons.bug_report),

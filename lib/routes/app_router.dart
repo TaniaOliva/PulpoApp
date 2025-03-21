@@ -6,6 +6,7 @@ import 'package:flutter_pulpoapp/pages/login_page.dart';
 import 'package:flutter_pulpoapp/pages/out_of_stock_page.dart';
 import 'package:flutter_pulpoapp/pages/register_page.dart';
 import 'package:flutter_pulpoapp/pages/products_page.dart';
+import 'package:flutter_pulpoapp/pages/scanner_page.dart';
 
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -20,6 +21,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => InventoryPage());
       case '/out_of_stock':
         return MaterialPageRoute(builder: (_) => const OutOfStockPage());
+      case '/Scanner':
+        return MaterialPageRoute(builder: (_) => ScannerPage());
       case '/products':
         return MaterialPageRoute(
           builder: (context) =>

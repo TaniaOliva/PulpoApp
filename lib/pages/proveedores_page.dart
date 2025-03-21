@@ -11,13 +11,13 @@ class ProvidersPage extends StatefulWidget {
 
 class _ProvidersPageState extends State<ProvidersPage> {
   final TextEditingController _providerController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  String _searchQuery = "";
 
-  // Obtener el ID del usuario actual
   String get userId => _auth.currentUser?.uid ?? '';
 
-  // Agregar proveedor a Firebase en la colección del usuario
   void _addProvider() async {
     String name = _providerController.text.trim();
     if (name.isNotEmpty && userId.isNotEmpty) {
@@ -27,11 +27,10 @@ class _ProvidersPageState extends State<ProvidersPage> {
           .collection('proveedores')
           .add({'name': name});
       _providerController.clear();
-      Navigator.pop(context); // Cerrar el diálogo después de agregar
+      Navigator.pop(context);
     }
   }
 
-  // Mostrar diálogo de confirmación antes de eliminar
   void _confirmDeleteProvider(String id) {
     showDialog(
       context: context,
@@ -41,13 +40,13 @@ class _ProvidersPageState extends State<ProvidersPage> {
             const Text("¿Estás seguro de que deseas eliminar este proveedor?"),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context), // Cerrar sin eliminar
+            onPressed: () => Navigator.pop(context),
             child: const Text("No"),
           ),
           ElevatedButton(
             onPressed: () {
               _deleteProvider(id);
-              Navigator.pop(context); // Cerrar después de eliminar
+              Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text("Sí"),
@@ -57,7 +56,6 @@ class _ProvidersPageState extends State<ProvidersPage> {
     );
   }
 
-  // Eliminar proveedor de Firebase
   void _deleteProvider(String id) async {
     await _firestore
         .collection('users')
@@ -70,11 +68,11 @@ class _ProvidersPageState extends State<ProvidersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4E5D6), // Fondo beige claro
+      backgroundColor: const Color(0xFFF4E5D6),
       appBar: AppBar(
         title: const Text("Proveedor",
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFFD9A7A0), // Color del encabezado
+        backgroundColor: const Color(0xFFD9A7A0),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -87,8 +85,13 @@ class _ProvidersPageState extends State<ProvidersPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Buscador
             TextField(
+              controller: _searchController,
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value.toLowerCase();
+                });
+              },
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
                 hintText: "Buscar proveedor...",
@@ -99,12 +102,9 @@ class _ProvidersPageState extends State<ProvidersPage> {
               ),
             ),
             const SizedBox(height: 16),
-            // Título
             const Text("Proveedores",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const Divider(color: Colors.grey),
-
-            // Lista de proveedores desde Firebase del usuario actual
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: _firestore
@@ -117,7 +117,11 @@ class _ProvidersPageState extends State<ProvidersPage> {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  var providers = snapshot.data!.docs;
+                  var providers = snapshot.data!.docs.where((doc) {
+                    String name = doc['name'].toLowerCase();
+                    return name.contains(_searchQuery);
+                  }).toList();
+
                   if (providers.isEmpty) {
                     return const Center(child: Text("No hay proveedores aún"));
                   }
@@ -130,8 +134,7 @@ class _ProvidersPageState extends State<ProvidersPage> {
                       String name = doc['name'];
 
                       return GestureDetector(
-                        onLongPress: () => _confirmDeleteProvider(
-                            id), // Diálogo antes de eliminar
+                        onLongPress: () => _confirmDeleteProvider(id),
                         onTap: () => Navigator.pushNamed(context, '/products',
                             arguments: name),
                         child: Container(

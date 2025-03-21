@@ -69,7 +69,6 @@ class _InventoryPageState extends State<InventoryPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Campo de búsqueda
             TextField(
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
@@ -86,8 +85,6 @@ class _InventoryPageState extends State<InventoryPage> {
               },
             ),
             const SizedBox(height: 16),
-
-            // Filtro por categoría
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -107,7 +104,6 @@ class _InventoryPageState extends State<InventoryPage> {
                             return const Text("Cargando...");
                           }
 
-                          // Extraer categorías únicas desde los productos
                           var products = snapshot.data!.docs;
                           var categories = <String>{'Todas'};
 
@@ -137,8 +133,6 @@ class _InventoryPageState extends State<InventoryPage> {
               ],
             ),
             const Divider(color: Colors.grey),
-
-            // Lista de productos
             Expanded(
               child: _userId == null
                   ? const Center(child: CircularProgressIndicator())
@@ -156,7 +150,6 @@ class _InventoryPageState extends State<InventoryPage> {
 
                         var products = snapshot.data!.docs;
 
-                        // Filtrar por categoría
                         if (_selectedCategory != 'Todas') {
                           products = products
                               .where(
@@ -164,7 +157,6 @@ class _InventoryPageState extends State<InventoryPage> {
                               .toList();
                         }
 
-                        // Filtrar por búsqueda
                         if (_searchQuery.isNotEmpty) {
                           products = products
                               .where((doc) => doc['name']
@@ -197,8 +189,7 @@ class _InventoryPageState extends State<InventoryPage> {
                                         style: const TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold),
-                                        softWrap:
-                                            true, // Permite saltos de línea
+                                        softWrap: true,
                                       ),
                                     ),
                                     const SizedBox(width: 8),
@@ -243,8 +234,6 @@ class _InventoryPageState extends State<InventoryPage> {
           ],
         ),
       ),
-
-      // Botón flotante para agregar productos
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.teal,
         onPressed: () {
