@@ -49,6 +49,38 @@ class _InventoryPageState extends State<InventoryPage> {
     });
   }
 
+  void _deleteProduct(String productId) {
+    _firestore
+        .collection('users')
+        .doc(_userId)
+        .collection('productos')
+        .doc(productId)
+        .delete();
+  }
+
+  void _confirmDelete(String productId, String productName) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Eliminar producto"),
+        content: Text("¿Estás seguro de que quieres eliminar '$productName'?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancelar"),
+          ),
+          TextButton(
+            onPressed: () {
+              _deleteProduct(productId);
+              Navigator.pop(context);
+            },
+            child: const Text("Eliminar", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -177,52 +209,56 @@ class _InventoryPageState extends State<InventoryPage> {
                             String price = doc['price']?.toString() ?? '0';
                             int quantity = doc['quantity'] ?? 0;
 
-                            return Card(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        name,
-                                        style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold),
-                                        softWrap: true,
+                            return GestureDetector(
+                              onLongPress: () => _confirmDelete(id, name),
+                              child: Card(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          name,
+                                          style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                          softWrap: true,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text("${price}\Lps",
-                                        style: const TextStyle(fontSize: 17)),
-                                    const SizedBox(width: 8),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(Icons.remove),
-                                          onPressed: () =>
-                                              _updateQuantity(id, -1),
-                                        ),
-                                        Text(quantity.toString(),
-                                            style:
-                                                const TextStyle(fontSize: 16)),
-                                        IconButton(
-                                          icon: const Icon(Icons.add),
-                                          onPressed: () =>
-                                              _updateQuantity(id, 1),
-                                        ),
-                                      ],
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.edit),
-                                      onPressed: () {
-                                        Navigator.pushNamed(
-                                            context, '/edit_product',
-                                            arguments: id);
-                                      },
-                                    ),
-                                  ],
+                                      const SizedBox(width: 8),
+                                      Text("${price}\Lps",
+                                          style: const TextStyle(fontSize: 17)),
+                                      const SizedBox(width: 8),
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          IconButton(
+                                            icon: const Icon(Icons.remove),
+                                            onPressed: () =>
+                                                _updateQuantity(id, -1),
+                                          ),
+                                          Text(quantity.toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 16)),
+                                          IconButton(
+                                            icon: const Icon(Icons.add),
+                                            onPressed: () =>
+                                                _updateQuantity(id, 1),
+                                          ),
+                                        ],
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.edit),
+                                        onPressed: () {
+                                          Navigator.pushNamed(
+                                              context, '/edit_product',
+                                              arguments: id);
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             );

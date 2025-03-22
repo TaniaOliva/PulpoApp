@@ -58,95 +58,101 @@ class _EditProductPageState extends State<EditProductPage> {
         backgroundColor: Colors.teal,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration:
-                    const InputDecoration(labelText: "Nombre del producto"),
-                validator: (value) =>
-                    value!.isEmpty ? "Ingrese un nombre" : null,
-              ),
-              StreamBuilder<QuerySnapshot>(
-                stream: _firestore
-                    .collection('users')
-                    .doc(userId)
-                    .collection('categorias')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const CircularProgressIndicator();
-                  }
-                  var categories =
-                      snapshot.data!.docs.map((doc) => doc['name']).toList();
-                  return DropdownButtonFormField<String>(
-                    value: _selectedCategory,
-                    hint: const Text("Seleccionar categoría"),
-                    onChanged: (value) =>
-                        setState(() => _selectedCategory = value),
-                    items: categories.map((cat) {
-                      return DropdownMenuItem<String>(
-                        value: cat,
-                        child: Text(cat),
-                      );
-                    }).toList(),
-                  );
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(
-                    labelText: "Nueva categoría (opcional)"),
-                onChanged: (value) => _newCategory = value,
-              ),
-              StreamBuilder<QuerySnapshot>(
-                stream: _firestore
-                    .collection('users')
-                    .doc(userId)
-                    .collection('proveedores')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const CircularProgressIndicator();
-                  }
-                  var suppliers =
-                      snapshot.data!.docs.map((doc) => doc['name']).toList();
-                  return DropdownButtonFormField<String>(
-                    value: _selectedSupplier,
-                    hint: const Text("Seleccionar proveedor"),
-                    onChanged: (value) =>
-                        setState(() => _selectedSupplier = value),
-                    items: suppliers.map((sup) {
-                      return DropdownMenuItem<String>(
-                        value: sup,
-                        child: Text(sup),
-                      );
-                    }).toList(),
-                  );
-                },
-              ),
-              TextFormField(
-                controller: _priceController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: "Precio"),
-                validator: (value) =>
-                    value!.isEmpty ? "Ingrese un precio" : null,
-              ),
-              TextFormField(
-                controller: _quantityController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: "Cantidad"),
-                validator: (value) =>
-                    value!.isEmpty ? "Ingrese una cantidad" : null,
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _updateProduct,
-                child: const Text("Actualizar Producto"),
-              ),
-            ],
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // Evita el overflow
+              children: [
+                TextFormField(
+                  controller: _nameController,
+                  decoration:
+                      const InputDecoration(labelText: "Nombre del producto"),
+                  validator: (value) =>
+                      value!.isEmpty ? "Ingrese un nombre" : null,
+                ),
+                StreamBuilder<QuerySnapshot>(
+                  stream: _firestore
+                      .collection('users')
+                      .doc(userId)
+                      .collection('categorias')
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const CircularProgressIndicator();
+                    }
+                    var categories =
+                        snapshot.data!.docs.map((doc) => doc['name']).toList();
+                    return DropdownButtonFormField<String>(
+                      value: _selectedCategory,
+                      hint: const Text("Seleccionar categoría"),
+                      onChanged: (value) =>
+                          setState(() => _selectedCategory = value),
+                      items: categories.map((cat) {
+                        return DropdownMenuItem<String>(
+                          value: cat,
+                          child: Text(cat),
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
+                TextFormField(
+                  decoration: const InputDecoration(
+                      labelText: "Nueva categoría (opcional)"),
+                  onChanged: (value) => _newCategory = value,
+                ),
+                StreamBuilder<QuerySnapshot>(
+                  stream: _firestore
+                      .collection('users')
+                      .doc(userId)
+                      .collection('proveedores')
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const CircularProgressIndicator();
+                    }
+                    var suppliers =
+                        snapshot.data!.docs.map((doc) => doc['name']).toList();
+                    return DropdownButtonFormField<String>(
+                      value: _selectedSupplier,
+                      hint: const Text("Seleccionar proveedor"),
+                      onChanged: (value) =>
+                          setState(() => _selectedSupplier = value),
+                      items: suppliers.map((sup) {
+                        return DropdownMenuItem<String>(
+                          value: sup,
+                          child: Text(sup),
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
+                TextFormField(
+                  controller: _priceController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: "Precio"),
+                  validator: (value) =>
+                      value!.isEmpty ? "Ingrese un precio" : null,
+                ),
+                TextFormField(
+                  controller: _quantityController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: "Cantidad"),
+                  validator: (value) =>
+                      value!.isEmpty ? "Ingrese una cantidad" : null,
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity, // Hace que el botón use todo el ancho
+                  child: ElevatedButton(
+                    onPressed: _updateProduct,
+                    child: const Text("Actualizar Producto"),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
