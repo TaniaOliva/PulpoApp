@@ -63,7 +63,7 @@ class _EditProductPageState extends State<EditProductPage> {
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisSize: MainAxisSize.min, // Evita el overflow
+              mainAxisSize: MainAxisSize.min,
               children: [
                 TextFormField(
                   controller: _nameController,
@@ -145,7 +145,7 @@ class _EditProductPageState extends State<EditProductPage> {
                 ),
                 const SizedBox(height: 20),
                 SizedBox(
-                  width: double.infinity, // Hace que el botón use todo el ancho
+                  width: double.infinity,
                   child: ElevatedButton(
                     onPressed: _updateProduct,
                     child: const Text("Actualizar Producto"),

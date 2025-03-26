@@ -113,7 +113,7 @@ class _AddProductPageState extends State<AddProductPage> {
                 ),
                 const SizedBox(height: 20),
                 SizedBox(
-                  width: double.infinity, // Ocupa todo el ancho disponible
+                  width: double.infinity,
                   child: ElevatedButton(
                     onPressed: _addProduct,
                     child: const Text("Guardar Producto"),

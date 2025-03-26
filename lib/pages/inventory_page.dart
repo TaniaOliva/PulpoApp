@@ -32,7 +32,7 @@ class _InventoryPageState extends State<InventoryPage> {
     }
   }
 
-  void _updateQuantity(String productId, int change) {
+  void _updateQuantity(String productId, String productName, int change) {
     final docRef = _firestore
         .collection('users')
         .doc(_userId)
@@ -45,6 +45,15 @@ class _InventoryPageState extends State<InventoryPage> {
         int newQuantity =
             (currentQuantity + change).clamp(0, double.infinity).toInt();
         docRef.update({'quantity': newQuantity});
+
+        // Guardar la actividad en la colección 'actividad_productos'
+        _firestore.collection('actividad_productos').add({
+          'userId': _userId,
+          'productId': productId,
+          'name': productName,
+          'change': change,
+          'timestamp': FieldValue.serverTimestamp(),
+        });
       }
     });
   }
@@ -228,7 +237,7 @@ class _InventoryPageState extends State<InventoryPage> {
                                         ),
                                       ),
                                       const SizedBox(width: 8),
-                                      Text("${price}\Lps",
+                                      Text("${price} Lps",
                                           style: const TextStyle(fontSize: 17)),
                                       const SizedBox(width: 8),
                                       Row(
@@ -237,7 +246,7 @@ class _InventoryPageState extends State<InventoryPage> {
                                           IconButton(
                                             icon: const Icon(Icons.remove),
                                             onPressed: () =>
-                                                _updateQuantity(id, -1),
+                                                _updateQuantity(id, name, -1),
                                           ),
                                           Text(quantity.toString(),
                                               style: const TextStyle(
@@ -245,7 +254,7 @@ class _InventoryPageState extends State<InventoryPage> {
                                           IconButton(
                                             icon: const Icon(Icons.add),
                                             onPressed: () =>
-                                                _updateQuantity(id, 1),
+                                                _updateQuantity(id, name, 1),
                                           ),
                                         ],
                                       ),
