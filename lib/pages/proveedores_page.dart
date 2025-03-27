@@ -21,14 +21,93 @@ class _ProvidersPageState extends State<ProvidersPage> {
   void _addProvider() async {
     String name = _providerController.text.trim();
     if (name.isNotEmpty && userId.isNotEmpty) {
+      List<String> selectedDays = await _selectDaysDialog();
       await _firestore
           .collection('users')
           .doc(userId)
           .collection('proveedores')
-          .add({'name': name});
+          .add({
+        'name': name,
+        'days': selectedDays,
+      });
       _providerController.clear();
       Navigator.pop(context);
     }
+  }
+
+  void _editProvider(
+      String id, String currentName, List<String> currentDays) async {
+    _providerController.text = currentName;
+    List<String> selectedDays =
+        await _selectDaysDialog(initialDays: currentDays);
+
+    if (_providerController.text.isNotEmpty) {
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('proveedores')
+          .doc(id)
+          .update({
+        'name': _providerController.text.trim(),
+        'days': selectedDays,
+      });
+    }
+  }
+
+  Future<List<String>> _selectDaysDialog({List<String>? initialDays}) async {
+    List<String> daysOfWeek = [
+      "Lunes",
+      "Martes",
+      "Miércoles",
+      "Jueves",
+      "Viernes",
+      "Sábado",
+      "Domingo"
+    ];
+    List<String> selectedDays = List.from(initialDays ?? []);
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Seleccionar días de visita"),
+          content: StatefulBuilder(
+            builder: (context, setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: daysOfWeek.map((day) {
+                  return CheckboxListTile(
+                    title: Text(day),
+                    value: selectedDays.contains(day),
+                    onChanged: (bool? value) {
+                      setState(() {
+                        if (value == true) {
+                          selectedDays.add(day);
+                        } else {
+                          selectedDays.remove(day);
+                        }
+                      });
+                    },
+                  );
+                }).toList(),
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, []),
+              child: const Text("Cancelar"),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, selectedDays),
+              child: const Text("Aceptar"),
+            ),
+          ],
+        );
+      },
+    );
+
+    return selectedDays;
   }
 
   void _confirmDeleteProvider(String id) {
@@ -68,9 +147,9 @@ class _ProvidersPageState extends State<ProvidersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4E5D6),
+      backgroundColor: const Color.fromARGB(255, 246, 241, 237),
       appBar: AppBar(
-        title: const Text("Proveedor",
+        title: const Text("Proveedores",
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFFD9A7A0),
         actions: [
@@ -104,7 +183,7 @@ class _ProvidersPageState extends State<ProvidersPage> {
             const SizedBox(height: 16),
             const Text("Proveedores",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const Divider(color: Colors.grey),
+            const Divider(color: Color.fromARGB(255, 199, 178, 178)),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: _firestore
@@ -126,29 +205,47 @@ class _ProvidersPageState extends State<ProvidersPage> {
                     return const Center(child: Text("No hay proveedores aún"));
                   }
 
-                  return Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: providers.map((doc) {
+                  return ListView.builder(
+                    itemCount: providers.length,
+                    itemBuilder: (context, index) {
+                      var doc = providers[index];
                       String id = doc.id;
                       String name = doc['name'];
+                      List<String> days = (doc.data() as Map<String, dynamic>)
+                              .containsKey('days')
+                          ? List<String>.from(doc['days'])
+                          : [];
 
-                      return GestureDetector(
-                        onLongPress: () => _confirmDeleteProvider(id),
-                        onTap: () => Navigator.pushNamed(context, '/products',
-                            arguments: name),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(10),
+                      return Card(
+                        elevation: 2,
+                        margin: const EdgeInsets.symmetric(vertical: 5),
+                        child: ListTile(
+                          title: Text(name,
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                          subtitle: Text(days.isNotEmpty
+                              ? "Días: ${days.join(', ')}"
+                              : "Días: No especificado"),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon:
+                                    const Icon(Icons.edit, color: Colors.black),
+                                onPressed: () => _editProvider(id, name, days),
+                              ),
+                              IconButton(
+                                icon:
+                                    const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () => _confirmDeleteProvider(id),
+                              ),
+                            ],
                           ),
-                          child:
-                              Text(name, style: const TextStyle(fontSize: 16)),
+                          onTap: () => Navigator.pushNamed(context, '/products',
+                              arguments: name),
                         ),
                       );
-                    }).toList(),
+                    },
                   );
                 },
               ),

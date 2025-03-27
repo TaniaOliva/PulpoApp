@@ -22,6 +22,7 @@ class _ScannerPageState extends State<ScannerPage> {
   TextEditingController quantityController = TextEditingController();
   String? selectedCategory;
   String? selectedSupplier;
+  TextEditingController categoryController = TextEditingController();
 
   String get userId => _auth.currentUser?.uid ?? '';
 
@@ -30,6 +31,7 @@ class _ScannerPageState extends State<ScannerPage> {
     nameController.dispose();
     priceController.dispose();
     quantityController.dispose();
+    categoryController.dispose();
     super.dispose();
   }
 
@@ -135,10 +137,29 @@ class _ScannerPageState extends State<ScannerPage> {
     );
   }
 
+  void _addNewCategory() async {
+    String newCategory = categoryController.text.trim();
+    if (newCategory.isNotEmpty) {
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('categorias')
+          .add({'name': newCategory});
+      setState(() {
+        selectedCategory = newCategory;
+      });
+      categoryController.clear();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Escáner de Inventario")),
+      backgroundColor: const Color.fromARGB(255, 252, 248, 243),
+      appBar: AppBar(
+        title: const Text("Escáner de Inventario"),
+        backgroundColor: const Color(0xFFD9A7A0),
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -177,8 +198,6 @@ class _ScannerPageState extends State<ScannerPage> {
                     decoration: const InputDecoration(labelText: "Cantidad"),
                     keyboardType: TextInputType.number,
                   ),
-
-                  // Selección de Categoría
                   StreamBuilder<QuerySnapshot>(
                     stream: _firestore
                         .collection('users')
@@ -186,27 +205,42 @@ class _ScannerPageState extends State<ScannerPage> {
                         .collection('categorias')
                         .snapshots(),
                     builder: (context, snapshot) {
-                      if (!snapshot.hasData)
+                      if (!snapshot.hasData) {
                         return const CircularProgressIndicator();
+                      }
                       var categories = snapshot.data!.docs
                           .map((doc) => doc['name'].toString())
                           .toList();
 
-                      return DropdownButtonFormField<String>(
-                        value: selectedCategory,
-                        hint: const Text("Seleccionar categoría"),
-                        onChanged: (value) =>
-                            setState(() => selectedCategory = value),
-                        items: categories.map((cat) {
-                          return DropdownMenuItem<String>(
-                            value: cat,
-                            child: Text(cat),
-                          );
-                        }).toList(),
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          DropdownButtonFormField<String>(
+                            value: selectedCategory,
+                            hint: const Text("Seleccionar categoría"),
+                            onChanged: (value) =>
+                                setState(() => selectedCategory = value),
+                            items: categories.map((cat) {
+                              return DropdownMenuItem<String>(
+                                value: cat,
+                                child: Text(cat),
+                              );
+                            }).toList(),
+                          ),
+                          TextField(
+                            controller: categoryController,
+                            decoration: InputDecoration(
+                              labelText: "Nueva categoría",
+                              suffixIcon: IconButton(
+                                icon: const Icon(Icons.add),
+                                onPressed: _addNewCategory,
+                              ),
+                            ),
+                          ),
+                        ],
                       );
                     },
                   ),
-
                   StreamBuilder<QuerySnapshot>(
                     stream: _firestore
                         .collection('users')
@@ -214,8 +248,9 @@ class _ScannerPageState extends State<ScannerPage> {
                         .collection('proveedores')
                         .snapshots(),
                     builder: (context, snapshot) {
-                      if (!snapshot.hasData)
+                      if (!snapshot.hasData) {
                         return const CircularProgressIndicator();
+                      }
                       var suppliers = snapshot.data!.docs
                           .map((doc) => doc['name'].toString())
                           .toList();
@@ -234,7 +269,6 @@ class _ScannerPageState extends State<ScannerPage> {
                       );
                     },
                   ),
-
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: _saveProductData,

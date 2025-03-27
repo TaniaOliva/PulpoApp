@@ -33,7 +33,7 @@ class _OutOfStockPageState extends State<OutOfStockPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4E5D6),
+      backgroundColor: const Color.fromARGB(255, 251, 245, 239),
       appBar: AppBar(
         title: const Text("Productos sin Stock",
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),

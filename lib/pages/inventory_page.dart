@@ -46,9 +46,11 @@ class _InventoryPageState extends State<InventoryPage> {
             (currentQuantity + change).clamp(0, double.infinity).toInt();
         docRef.update({'quantity': newQuantity});
 
-        // Guardar la actividad en la colección 'actividad_productos'
-        _firestore.collection('actividad_productos').add({
-          'userId': _userId,
+        _firestore
+            .collection('users')
+            .doc(_userId)
+            .collection('actividad_productos')
+            .add({
           'productId': productId,
           'name': productName,
           'change': change,
@@ -93,7 +95,7 @@ class _InventoryPageState extends State<InventoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4E5D6),
+      backgroundColor: const Color.fromARGB(255, 248, 241, 234),
       appBar: AppBar(
         title: const Text("Inventario",
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
@@ -189,27 +191,14 @@ class _InventoryPageState extends State<InventoryPage> {
                               child: CircularProgressIndicator());
                         }
 
-                        var products = snapshot.data!.docs;
-
-                        if (_selectedCategory != 'Todas') {
-                          products = products
-                              .where(
-                                  (doc) => doc['category'] == _selectedCategory)
-                              .toList();
-                        }
-
-                        if (_searchQuery.isNotEmpty) {
-                          products = products
-                              .where((doc) => doc['name']
-                                  .toLowerCase()
-                                  .contains(_searchQuery))
-                              .toList();
-                        }
-
-                        if (products.isEmpty) {
-                          return const Center(
-                              child: Text("No hay productos aún"));
-                        }
+                        var products = snapshot.data!.docs.where((doc) {
+                          String category = doc['category'] ?? 'Sin categoría';
+                          String name = doc['name']?.toLowerCase() ?? '';
+                          bool matchesCategory = _selectedCategory == 'Todas' ||
+                              category == _selectedCategory;
+                          bool matchesSearch = name.contains(_searchQuery);
+                          return matchesCategory && matchesSearch;
+                        }).toList();
 
                         return ListView(
                           children: products.map((doc) {
@@ -223,51 +212,55 @@ class _InventoryPageState extends State<InventoryPage> {
                               child: Card(
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
                                           name,
                                           style: const TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold),
-                                          softWrap: true,
                                         ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text("${price} Lps",
-                                          style: const TextStyle(fontSize: 17)),
-                                      const SizedBox(width: 8),
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          IconButton(
-                                            icon: const Icon(Icons.remove),
-                                            onPressed: () =>
-                                                _updateQuantity(id, name, -1),
-                                          ),
-                                          Text(quantity.toString(),
-                                              style: const TextStyle(
-                                                  fontSize: 16)),
-                                          IconButton(
-                                            icon: const Icon(Icons.add),
-                                            onPressed: () =>
-                                                _updateQuantity(id, name, 1),
-                                          ),
-                                        ],
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.edit),
-                                        onPressed: () {
-                                          Navigator.pushNamed(
-                                              context, '/edit_product',
-                                              arguments: id);
-                                        },
-                                      ),
-                                    ],
-                                  ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text("${price} Lps",
+                                                style: const TextStyle(
+                                                    fontSize: 17)),
+                                            Row(
+                                              children: [
+                                                IconButton(
+                                                  icon:
+                                                      const Icon(Icons.remove),
+                                                  onPressed: () =>
+                                                      _updateQuantity(
+                                                          id, name, -1),
+                                                ),
+                                                Text(quantity.toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 16)),
+                                                IconButton(
+                                                  icon: const Icon(Icons.add),
+                                                  onPressed: () =>
+                                                      _updateQuantity(
+                                                          id, name, 1),
+                                                ),
+                                              ],
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(Icons.edit,
+                                                  color: Colors.blue),
+                                              onPressed: () {
+                                                Navigator.pushNamed(
+                                                    context, '/edit_product',
+                                                    arguments: id);
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ]),
                                 ),
                               ),
                             );

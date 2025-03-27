@@ -14,7 +14,7 @@ class ProductsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Productos de $providerName"),
-        backgroundColor: const Color(0xFFD9A7A0),
+        backgroundColor: const Color.fromARGB(255, 224, 192, 165),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -57,7 +57,8 @@ class ProductsPage extends StatelessWidget {
                     subtitle: Text(
                         "Cantidad: ${product['quantity']}\nPrecio: \Lps${product['price']}",
                         style: const TextStyle(fontSize: 16)),
-                    leading: const Icon(Icons.shopping_bag, color: Colors.teal),
+                    leading:
+                        const Icon(Icons.shopping_bag, color: Colors.orange),
                   ),
                 );
               },

@@ -27,27 +27,29 @@ class PopularesPage extends StatelessWidget {
           products.sort((a, b) =>
               b.value['movimientos'].compareTo(a.value['movimientos']));
 
+          var topProducts = products.take(5).toList();
+
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
                 Expanded(
                   child: ListView.builder(
-                    itemCount: products.length,
+                    itemCount: topProducts.length,
                     itemBuilder: (context, index) {
-                      var product = products[index];
+                      var product = topProducts[index];
                       return Card(
                         margin: const EdgeInsets.symmetric(vertical: 8),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
                         child: ListTile(
                           leading: const Icon(Icons.local_offer,
-                              color: Colors.orange),
+                              color: Colors.green),
                           title: Text(product.value['name'] ?? 'Sin nombre',
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold)),
                           subtitle: Text(
-                              'Movimientos: ${product.value['movimientos']}'),
+                              'Actividad: ${product.value['movimientos']}'),
                         ),
                       );
                     },
@@ -58,20 +60,21 @@ class PopularesPage extends StatelessWidget {
                   height: 250,
                   child: BarChart(
                     BarChartData(
-                      barGroups: _generateBarData(products),
+                      barGroups: _generateBarData(topProducts),
                       borderData: FlBorderData(show: false),
                       titlesData: FlTitlesData(
                         leftTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: true),
+                          sideTitles: SideTitles(showTitles: false),
                         ),
                         bottomTitles: AxisTitles(
                           sideTitles: SideTitles(
                             showTitles: true,
                             getTitlesWidget: (double value, TitleMeta meta) {
                               int index = value.toInt();
-                              if (index >= 0 && index < products.length) {
-                                String firstWord =
-                                    products[index].value['name'].split(' ')[0];
+                              if (index >= 0 && index < topProducts.length) {
+                                String firstWord = topProducts[index]
+                                    .value['name']
+                                    .split(' ')[0];
                                 return Text(
                                   firstWord,
                                   style: const TextStyle(fontSize: 10),
@@ -130,7 +133,7 @@ class PopularesPage extends StatelessWidget {
         barRods: [
           BarChartRodData(
             toY: products[index].value['movimientos'].toDouble(),
-            color: Colors.orange,
+            color: Colors.green,
             width: 16,
             borderRadius: BorderRadius.circular(4),
           ),
