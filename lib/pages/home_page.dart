@@ -82,7 +82,7 @@ class HomePage extends StatelessWidget {
               height: 230,
               onTap: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const OutOfStockPage()),
+                MaterialPageRoute(builder: (context) => OutOfStockPage()),
               ),
             ),
           ),

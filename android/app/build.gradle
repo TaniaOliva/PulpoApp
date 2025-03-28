@@ -23,7 +23,7 @@ android {
     }
 
     defaultConfig {
-       
+        compileSdkVersion 33
         applicationId = "com.example.flutter_pulpoapp"
         minSdkVersion 23
         //minSdk = flutter.minSdkVersion

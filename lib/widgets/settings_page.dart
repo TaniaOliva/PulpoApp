@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -117,6 +118,44 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  void _showPermissionDialog(Map<Permission, PermissionStatus> statuses) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Permisos de la app"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: statuses.entries.map((entry) {
+              return ListTile(
+                title: Text(entry.key.toString().split(".").last),
+                subtitle:
+                    Text(entry.value.isGranted ? "Concedido" : "Denegado"),
+              );
+            }).toList(),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cerrar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _checkPermissions() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.camera,
+      Permission.storage,
+      Permission.location,
+      Permission.notification,
+    ].request();
+
+    _showPermissionDialog(statuses);
+  }
+
   void _logout() async {
     await _auth.signOut();
     Navigator.pushReplacementNamed(context, '/');
@@ -150,7 +189,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ListTile(
               leading: const Icon(Icons.privacy_tip),
               title: const Text("Permisos de la app"),
-              onTap: () {},
+              onTap: _checkPermissions,
             ),
             ListTile(
               leading: const Icon(Icons.bug_report),
